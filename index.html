@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>五月天卜卜互动分享</title>
+    
+    <!-- 基础meta标签 -->
+    <meta name="description" content="五月天卜卜互动分享页面，通过歌词解密解锁惊喜">
+    <meta name="keywords" content="五月天,卜卜,互动,分享,wmls">
+    <meta name="format-detection" content="telephone=no, email=no">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
+    <!-- PWA相关meta标签 -->
+    <meta name="theme-color" content="#ff7e2e">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="五月天卜卜">
+    
+    <!-- iOS图标 -->
+    <link rel="apple-touch-icon" href="images/阿信卜卜.png" sizes="180x180">
+    
+    <!-- manifest链接 -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- 防止微信缓存页面的脚本 -->
+    <script type="text/javascript">
+        // 防止微信缓存导致页面不更新
+        (function() {
+            window.onpageshow = function(event) {
+                if (event.persisted) {
+                    window.location.reload();
+                }
+            };
+            
+            // 添加时间戳防止资源缓存
+            function addTimestampToLinks() {
+                var links = document.querySelectorAll('link[rel="stylesheet"]');
+                var timestamp = new Date().getTime();
+                for (var i = 0; i < links.length; i++) {
+                    var href = links[i].getAttribute('href');
+                    if (href.indexOf('?') === -1) {
+                        links[i].setAttribute('href', href + '?' + timestamp);
+                    }
+                }
+            }
+            
+            // 页面加载完成后执行
+            window.addEventListener('DOMContentLoaded', function() {
+                addTimestampToLinks();
+            });
+        })();
+    </script>
+    <meta property="og:title" content="五月天卜卜互动分享">
+    <meta property="og:description" content="一起来和卜卜互动吧！">
+    <meta property="og:type" content="website">
+    <link rel="stylesheet" href="styles.css?v=1.0">
+</head>
+<body>
+    <!-- 主容器 -->
+    <div class="container">
+        <!-- 宝箱区域 -->
+        <div class="treasure-box">
+            <img src="images/box-closed.svg" alt="宝箱" id="box-image">
+        </div>
+        
+        <!-- 图片展示区域 - 已移除carrot1和carrot2图片 -->
+        <div class="image-container hidden"></div>
+        
+        <!-- 文字提示区域 -->
+        <div class="text-message hidden" id="welcome-message">
+            <img src="images/阿信卜卜.png" alt="五月天卜卜" class="welcome-main-image">
+            <p>❤欢迎光临！wmls！❤</p>
+        </div>
+    </div>
+    
+    <!-- 弹窗区域 -->
+    <div class="modal" id="puzzle-modal">
+        <div class="modal-content">
+            <h2>你需要写入正确的暗号才能打开宝箱</h2>
+            <div class="lyrics">
+                <p>对你深深崇拜，深深迷恋，深深的沉醉</p>
+            </div>
+            <div class="input-area">
+                <input type="text" id="answer-input" placeholder="请输入下一句歌词..." maxlength="50">
+                <button id="submit-button">确定</button>
+            </div>
+            <p class="error-message hidden" id="error-text">答案不正确，请再试一次！</p>
+        </div>
+    </div>
+    
+    <!-- 分享按钮 -->
+    <div class="share-container">
+        <button id="shareBtn" class="share-btn">
+            <span>分享到微信</span>
+        </button>
+    </div>
+    
+    <!-- 下载按钮和部署教程按钮 -->
+    <div style="position: fixed; top: 20px; right: 20px; z-index: 99; display: flex; gap: 10px;">
+        <a href="download.html" class="share-btn" style="text-decoration: none; padding: 8px 16px; font-size: 14px;">
+            下载应用
+        </a>
+        <a href="deploy.html" class="share-btn" style="text-decoration: none; padding: 8px 16px; font-size: 14px; background-color: #07C160;">
+            部署教程
+        </a>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>

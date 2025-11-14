@@ -1,0 +1,33 @@
+{
+  "name": "五月天卜卜互动分享",
+  "short_name": "五月天卜卜",
+  "description": "五月天卜卜互动分享页面，通过歌词解密解锁惊喜",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#fff5e6",
+  "theme_color": "#ff7e2e",
+  "icons": [
+    {
+      "src": "images/阿信卜卜.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "images/阿信卜卜.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "orientation": "portrait",
+  "shortcuts": [
+    {
+      "name": "打开宝箱",
+      "short_name": "宝箱",
+      "description": "立即打开宝箱挑战",
+      "url": "index.html",
+      "icons": [{ "src": "images/box-closed.svg", "sizes": "96x96" }]
+    }
+  ]
+}
