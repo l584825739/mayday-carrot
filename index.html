@@ -511,8 +511,8 @@
             // 添加滚动监听
             albumScrollContainer.addEventListener('scroll', checkVisibleAlbums);
             
-            // 初始检查可见专辑
-            setTimeout(checkVisibleAlbums, 100);
+            // 初始检查只在专辑页面显示时执行
+            // 移除自动检查，避免在非专辑页面播放音乐
         }
 
         // 生成专辑网格
@@ -545,6 +545,11 @@
 
         // 检查可见的专辑并播放最前端的专辑
         function checkVisibleAlbums() {
+            // 只有在专辑页面才执行检查
+            if (albumSection.style.display !== 'block') {
+                return;
+            }
+            
             const albumItems = document.querySelectorAll('.album-item');
             let frontmostAlbum = null;
             let smallestDistance = Infinity;
@@ -622,8 +627,11 @@
                 return Promise.resolve(audioCache[album.audio]);
             }
             
-            loadingIndicator.textContent = `正在加载《${album.song}》...`;
-            loadingIndicator.style.display = 'block';
+            // 只有在专辑页面才显示加载指示器
+            if (albumSection.style.display === 'block') {
+                loadingIndicator.textContent = `正在加载《${album.song}》...`;
+                loadingIndicator.style.display = 'block';
+            }
             
             return fetch(album.audio)
                 .then(response => {
@@ -734,6 +742,11 @@
         
         // 播放指定专辑的歌曲
         function playAlbum(album) {
+            // 只有在专辑页面才允许播放
+            if (albumSection.style.display !== 'block') {
+                return;
+            }
+            
             initAudioContext();
             
             // 停止当前播放
@@ -794,6 +807,9 @@
                 setTimeout(() => {
                     passwordSection.style.display = 'none';
                     welcomeSection.style.display = 'block';
+                    // 隐藏播放器和加载指示器
+                    playerControls.style.display = 'none';
+                    loadingIndicator.style.display = 'none';
                 }, 1500);
             } else {
                 // 错误提示
@@ -860,8 +876,11 @@
 
         // 音频播放结束时继续播放
         audioPlayer.addEventListener('ended', () => {
-            audioPlayer.currentTime = 0;
-            audioPlayer.play();
+            // 只有在专辑页面才继续播放
+            if (albumSection.style.display === 'block') {
+                audioPlayer.currentTime = 0;
+                audioPlayer.play();
+            }
         });
 
         // 页面加载完成后初始化
