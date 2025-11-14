@@ -13,50 +13,13 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     
-    <!-- PWA相关meta标签 -->
-    <meta name="theme-color" content="#ff7e2e">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="五月天卜卜">
+
     
-    <!-- iOS图标 -->
-    <link rel="apple-touch-icon" href="images/阿信卜卜.png" sizes="180x180">
-    
-    <!-- manifest链接 -->
-    <link rel="manifest" href="manifest.json">
-    
-    <!-- 防止微信缓存页面的脚本 -->
-    <script type="text/javascript">
-        // 防止微信缓存导致页面不更新
-        (function() {
-            window.onpageshow = function(event) {
-                if (event.persisted) {
-                    window.location.reload();
-                }
-            };
-            
-            // 添加时间戳防止资源缓存
-            function addTimestampToLinks() {
-                var links = document.querySelectorAll('link[rel="stylesheet"]');
-                var timestamp = new Date().getTime();
-                for (var i = 0; i < links.length; i++) {
-                    var href = links[i].getAttribute('href');
-                    if (href.indexOf('?') === -1) {
-                        links[i].setAttribute('href', href + '?' + timestamp);
-                    }
-                }
-            }
-            
-            // 页面加载完成后执行
-            window.addEventListener('DOMContentLoaded', function() {
-                addTimestampToLinks();
-            });
-        })();
-    </script>
+
     <meta property="og:title" content="五月天卜卜互动分享">
     <meta property="og:description" content="一起来和卜卜互动吧！">
     <meta property="og:type" content="website">
-    <link rel="stylesheet" href="styles.css?v=1.0">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <!-- 主容器 -->
@@ -72,7 +35,18 @@
         <!-- 文字提示区域 -->
         <div class="text-message hidden" id="welcome-message">
             <img src="images/阿信卜卜.png" alt="五月天卜卜" class="welcome-main-image">
+            <button id="show-albums-button" class="show-albums-btn">点这里</button>
             <p>❤欢迎光临！wmls！❤</p>
+        </div>
+        
+        <!-- 专辑封面展示区 -->
+        <div class="album-showcase hidden" id="album-showcase">
+            <h3 class="showcase-title">五月天专辑</h3>
+            <div class="album-scroll-container">
+                <div class="album-track" id="album-track">
+                    <!-- 专辑项将通过JavaScript动态添加 -->
+                </div>
+            </div>
         </div>
     </div>
     
@@ -91,22 +65,7 @@
         </div>
     </div>
     
-    <!-- 分享按钮 -->
-    <div class="share-container">
-        <button id="shareBtn" class="share-btn">
-            <span>分享到微信</span>
-        </button>
-    </div>
-    
-    <!-- 下载按钮和部署教程按钮 -->
-    <div style="position: fixed; top: 20px; right: 20px; z-index: 99; display: flex; gap: 10px;">
-        <a href="download.html" class="share-btn" style="text-decoration: none; padding: 8px 16px; font-size: 14px;">
-            下载应用
-        </a>
-        <a href="deploy.html" class="share-btn" style="text-decoration: none; padding: 8px 16px; font-size: 14px; background-color: #07C160;">
-            部署教程
-        </a>
-    </div>
+
     
     <script src="script.js"></script>
 </body>

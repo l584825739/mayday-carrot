@@ -147,6 +147,45 @@ body {
     border-radius: 15px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
     object-fit: contain;
+    cursor: pointer; /* 确保始终显示为可点击指针 */
+}
+
+.welcome-main-image:hover {
+    transform: scale(1.05); /* 鼠标悬停时略微放大 */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* 增强阴影效果 */
+}
+
+/* 显示专辑按钮样式 */
+.show-albums-btn {
+    background-color: #ff5722;
+    color: white;
+    border: none;
+    border-radius: 25px;
+    padding: 15px 30px;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    margin: 20px 0;
+    box-shadow: 0 4px 15px rgba(255, 87, 34, 0.4);
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.show-albums-btn:hover {
+    background-color: #e64a19;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(255, 87, 34, 0.5);
+}
+
+.show-albums-btn:active {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(255, 87, 34, 0.6);
+}
+
+.show-albums-btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(255, 87, 34, 0.3);
 }
 
 /* 文字消息背景装饰 */
@@ -528,4 +567,163 @@ body {
 
 .loading {
     animation: pulse 1s infinite ease-in-out;
+}
+
+/* 专辑展示区样式 */
+.album-showcase {
+    margin-top: 40px;
+    width: 100%;
+    max-width: 700px;
+}
+
+.showcase-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* 滑动容器样式 */
+.album-scroll-container {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    /* 触摸优化 */
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+}
+
+.album-track {
+    display: flex;
+    gap: 16px;
+    padding: 10px 0;
+    transition: transform 0.3s ease;
+    /* 防止文字选择 */
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+/* 专辑项样式 */
+.album-item {
+    flex: 0 0 auto;
+    width: 200px;
+    cursor: pointer;
+    /* 触摸友好 */
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 0.2s ease;
+}
+
+.album-item:hover {
+    transform: translateY(-5px);
+}
+
+.album-item:active {
+    transform: scale(0.98);
+}
+
+.album-cover {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.album-item:hover .album-cover {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    transform: scale(1.05);
+}
+
+/* 播放状态样式 */
+.album-item.playing {
+    transform: scale(1.08);
+    transition: transform 0.3s ease;
+}
+
+.album-item.playing img.album-cover {
+    box-shadow: 0 0 0 3px #4CAF50, 0 8px 16px rgba(0,0,0,0.2);
+    animation: pulse 2s infinite;
+    transform: scale(1.05);
+}
+
+/* 优化移动设备上的触摸反馈 */
+.album-item {
+    touch-action: pan-y; /* 允许垂直滚动，但水平方向由我们控制 */
+    -webkit-tap-highlight-color: transparent; /* 移除iOS上的点击高亮 */
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 3px #4CAF50, 0 8px 16px rgba(0,0,0,0.2);
+    }
+    70% {
+        box-shadow: 0 0 0 6px rgba(76, 175, 80, 0.2), 0 8px 16px rgba(0,0,0,0.2);
+    }
+    100% {
+        box-shadow: 0 0 0 3px #4CAF50, 0 8px 16px rgba(0,0,0,0.2);
+    }
+}
+
+.album-info {
+    margin-top: 12px;
+    text-align: center;
+}
+
+.album-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.album-date {
+    font-size: 14px;
+    color: #666;
+}
+
+/* 响应式布局 */
+@media (max-width: 768px) {
+    .album-item {
+        width: 160px;
+    }
+    
+    .album-cover {
+        height: 160px;
+    }
+    
+    .showcase-title {
+        font-size: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .album-item {
+        width: 140px;
+    }
+    
+    .album-cover {
+        height: 140px;
+    }
+    
+    .album-name {
+        font-size: 14px;
+    }
+    
+    .album-date {
+        font-size: 12px;
+    }
+    
+    .showcase-title {
+        font-size: 18px;
+    }
+    
+    .album-track {
+        gap: 12px;
+    }
 }
