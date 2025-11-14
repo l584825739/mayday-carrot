@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>五月天卜卜 - 欢迎来到五月天的音乐世界</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background-color: #f8f0e3;
+            color: #5a3921;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+        }
+
+        /* 容器样式 */
+        .container {
+            max-width: 100%;
+            padding: 20px;
+            text-align: center;
+        }
+
+        /* 标题样式 */
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: #ff6b6b;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 密码输入区域样式 */
+        .password-section {
+            background-color: #fff;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(184, 134, 11, 0.2);
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #8b4513;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #d2b48c;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #ff6b6b;
+        }
+
+        button {
+            background-color: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 12px 40px;
+            border-radius: 25px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #ff5252;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+        }
+
+        /* 宝箱样式 */
+        .box-container {
+            position: relative;
+            margin: 40px 0;
+        }
+
+        .box-image {
+            width: 200px;
+            height: auto;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .box-image:hover {
+            transform: scale(1.05);
+        }
+
+        /* 欢迎区域样式 */
+        .welcome-section {
+            display: none;
+            animation: fadeIn 0.8s ease-in-out;
+        }
+
+        .welcome-image {
+            max-width: 80%;
+            height: auto;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            margin-bottom: 20px;
+        }
+
+        .welcome-image:hover {
+            transform: scale(1.03);
+            box-shadow: 0 12px 48px rgba(184, 134, 11, 0.3);
+        }
+
+        .welcome-text {
+            font-size: 2rem;
+            color: #ff6b6b;
+            margin-top: 20px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 专辑展示区域样式 */
+        .album-section {
+            display: none;
+            width: 100%;
+            max-width: 1000px;
+            margin-top: 40px;
+        }
+
+        .album-title {
+            font-size: 2rem;
+            color: #ff6b6b;
+            margin-bottom: 30px;
+        }
+
+        .album-scroll-container {
+            position: relative;
+            height: 500px;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            padding: 20px;
+        }
+
+        .album-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            padding-bottom: 40px;
+        }
+
+        .album-item {
+            background-color: #fff;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .album-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        }
+
+        .album-cover {
+            width: 100%;
+            height: 280px;
+            object-fit: cover;
+        }
+
+        .album-info {
+            padding: 15px;
+        }
+
+        .album-name {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #5a3921;
+        }
+
+        .album-date {
+            font-size: 0.9rem;
+            color: #8b4513;
+            margin-bottom: 10px;
+        }
+
+        .album-song {
+            font-size: 1rem;
+            color: #ff6b6b;
+            font-weight: bold;
+        }
+
+        /* 播放控制样式 */
+        .player-controls {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 15px 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+        .current-album {
+            flex: 1;
+            margin-left: 20px;
+            text-align: left;
+        }
+
+        .current-album-name {
+            font-weight: bold;
+            color: #5a3921;
+        }
+
+        .current-song-name {
+            color: #ff6b6b;
+            font-size: 0.9rem;
+        }
+
+        .play-button {
+            background-color: #ff6b6b;
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        /* 动画效果 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        /* 移动端响应式设计 */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .password-section {
+                padding: 20px;
+            }
+
+            .welcome-text {
+                font-size: 1.5rem;
+            }
+
+            .welcome-image {
+                max-width: 95%;
+            }
+
+            .album-scroll-container {
+                height: 400px;
+                padding: 10px;
+            }
+
+            .album-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .album-cover {
+                height: 200px;
+            }
+
+            .player-controls {
+                padding: 10px 15px;
+            }
+
+            .current-album-name {
+                font-size: 0.9rem;
+            }
+
+            .current-song-name {
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 密码输入区域 -->
+        <div id="passwordSection" class="password-section">
+            <h1>✨ 输入暗号才能打开宝箱哦~ ✨</h1>
+            <div class="box-container">
+                <img id="boxImage" src="images/box-closed.svg" alt="宝箱" class="box-image">
+            </div>
+            <div class="input-group" style="background-color: #f9f0e6; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+                <div style="font-weight: bold; color: #5a3921; font-size: 1.1rem;">对你深深崇拜，深深迷恋，深深的沉醉</div>
+            </div>
+            <div class="input-group">
+                <input type="text" id="password" placeholder="请输入下一句歌词...">
+            </div>
+            <button id="unlockButton">开启宝箱</button>
+        </div>
+
+        <!-- 欢迎区域 -->
+        <div id="welcomeSection" class="welcome-section">
+            <img id="welcomeImage" src="images/阿信卜卜.png" alt="阿信卜卜" class="welcome-image">
+            <div class="welcome-text">❤ 欢迎光临！wmls！❤</div>
+        </div>
+
+        <!-- 专辑展示区域 -->
+        <div id="albumSection" class="album-section">
+            <h2 class="album-title">🎵 五月天专辑时光机 🎵</h2>
+            <div class="album-scroll-container" id="albumScrollContainer">
+                <div class="album-grid" id="albumGrid">
+                    <!-- 专辑内容将通过JavaScript动态生成 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 音乐播放器控制 -->
+    <div id="playerControls" class="player-controls" style="display: none;">
+        <img id="currentAlbumCover" src="" alt="当前专辑封面" width="50" height="50" style="border-radius: 8px;">
+        <div class="current-album">
+            <div id="currentAlbumName">专辑名称</div>
+            <div id="currentSongName">歌曲名称</div>
+        </div>
+        <audio id="audioPlayer" autoplay loop>
+            <source id="audioSource" src="" type="audio/mpeg">
+            您的浏览器不支持音频播放
+        </audio>
+        <button id="playPauseButton" class="play-button">⏸️</button>
+    </div>
+
+    <script>
+        // 专辑数据 - 按时间顺序排列
+        const albums = [
+            { name: "第一张创作专辑", date: "1999-07-07", song: "疯狂世界", image: "images/第一张创作专辑 1999-07-07.png", audio: "MP3/1 疯狂世界.mp3" },
+            { name: "爱情万岁", date: "2000-07-07", song: "温柔", image: "images/爱情万岁 2000-07-07.png", audio: "MP3/2 温柔.mp3" },
+            { name: "人生海海", date: "2001-07-06", song: "人生海海", image: "images/人生海海 2001-07-06.png", audio: "MP3/3 人生海海.mp3" },
+            { name: "时光机", date: "2003-11-11", song: "时光机", image: "images/时光机 2003-11-11.png", audio: "MP3/4 时光机.mp3" },
+            { name: "神的孩子都在跳舞", date: "2004-11-05", song: "倔强", image: "images/神的孩子都在跳舞 2004-11-05.png", audio: "MP3/5 倔强.mp3" },
+            { name: "为爱而生", date: "2006-12-29", song: "香水", image: "images/为爱而生 2006-12-29.png", audio: "MP3/6 香水.mp3" },
+            { name: "后青春的诗", date: "2008-10-23", song: "突然好想你", image: "images/后青春的诗 2008-10-23.png", audio: "MP3/7 突然好想你.mp3" },
+            { name: "第二人生", date: "2011-12-16", song: "星空", image: "images/第二人生 2011-12-16.png", audio: "MP3/8 星空.mp3" },
+            { name: "自选作品集", date: "2013-12-30", song: "顽固", image: "images/自选作品集 2013-12-30.png", audio: "MP3/9 顽固.mp3" },
+            { name: "自传", date: "2016-07-21", song: "步步", image: "images/自传 2016-07-21.png", audio: "MP3/8.1 步步.mp3" }
+        ];
+
+        // 元素获取
+        const passwordSection = document.getElementById('passwordSection');
+        const welcomeSection = document.getElementById('welcomeSection');
+        const albumSection = document.getElementById('albumSection');
+        const boxImage = document.getElementById('boxImage');
+        const unlockButton = document.getElementById('unlockButton');
+        const passwordInput = document.getElementById('password');
+        const welcomeImage = document.getElementById('welcomeImage');
+        const albumGrid = document.getElementById('albumGrid');
+        const albumScrollContainer = document.getElementById('albumScrollContainer');
+        const playerControls = document.getElementById('playerControls');
+        const audioPlayer = document.getElementById('audioPlayer');
+        const audioSource = document.getElementById('audioSource');
+        const currentAlbumName = document.getElementById('currentAlbumName');
+        const currentSongName = document.getElementById('currentSongName');
+        const currentAlbumCover = document.getElementById('currentAlbumCover');
+        const playPauseButton = document.getElementById('playPauseButton');
+
+        // 正确的密码
+        const CORRECT_PASSWORD = "深深爱上一种奉献的哲学";
+
+        // 初始化函数
+        function init() {
+            // 生成专辑网格
+            generateAlbumGrid();
+            
+            // 添加滚动监听
+            albumScrollContainer.addEventListener('scroll', checkVisibleAlbums);
+            
+            // 初始检查可见专辑
+            setTimeout(checkVisibleAlbums, 100);
+        }
+
+        // 生成专辑网格
+        function generateAlbumGrid() {
+            albumGrid.innerHTML = '';
+            albums.forEach(album => {
+                const albumItem = document.createElement('div');
+                albumItem.className = 'album-item';
+                albumItem.dataset.audio = album.audio;
+                albumItem.dataset.name = album.name;
+                albumItem.dataset.song = album.song;
+                albumItem.dataset.image = album.image;
+                
+                albumItem.innerHTML = `
+                    <img src="${album.image}" alt="${album.name}" class="album-cover">
+                    <div class="album-info">
+                        <div class="album-name">${album.name}</div>
+                        <div class="album-date">${album.date}</div>
+                        <div class="album-song">🎵 ${album.song}</div>
+                    </div>
+                `;
+                
+                albumItem.addEventListener('click', () => {
+                    playAlbum(album);
+                });
+                
+                albumGrid.appendChild(albumItem);
+            });
+        }
+
+        // 检查可见的专辑并播放最前端的专辑
+        function checkVisibleAlbums() {
+            const albumItems = document.querySelectorAll('.album-item');
+            let frontmostAlbum = null;
+            let smallestDistance = Infinity;
+            
+            const containerRect = albumScrollContainer.getBoundingClientRect();
+            const containerCenter = containerRect.top + containerRect.height / 2;
+            
+            albumItems.forEach(item => {
+                const rect = item.getBoundingClientRect();
+                const itemCenter = rect.top + rect.height / 2;
+                const distance = Math.abs(itemCenter - containerCenter);
+                
+                if (distance < smallestDistance) {
+                    smallestDistance = distance;
+                    frontmostAlbum = item;
+                }
+            });
+            
+            if (frontmostAlbum) {
+                const album = {
+                    audio: frontmostAlbum.dataset.audio,
+                    name: frontmostAlbum.dataset.name,
+                    song: frontmostAlbum.dataset.song,
+                    image: frontmostAlbum.dataset.image
+                };
+                
+                // 检查是否需要切换歌曲
+                if (audioSource.src !== album.audio) {
+                    playAlbum(album);
+                }
+            }
+        }
+
+        // 播放指定专辑的歌曲
+        function playAlbum(album) {
+            audioSource.src = album.audio;
+            audioPlayer.load();
+            audioPlayer.play();
+            
+            currentAlbumName.textContent = album.name;
+            currentSongName.textContent = album.song;
+            currentAlbumCover.src = album.image;
+            
+            // 只有在专辑页面才显示播放器
+            if (albumSection.style.display === 'block') {
+                playerControls.style.display = 'flex';
+            }
+            playPauseButton.textContent = '⏸️';
+        }
+
+        // 解锁按钮事件
+        unlockButton.addEventListener('click', () => {
+            const password = passwordInput.value;
+            
+            if (password === CORRECT_PASSWORD) {
+                // 密码正确
+                boxImage.src = 'images/box-open.svg';
+                
+                // 添加弹跳动画
+                boxImage.style.animation = 'bounce 1s ease-in-out';
+                
+                // 延迟显示欢迎界面
+                setTimeout(() => {
+                    passwordSection.style.display = 'none';
+                    welcomeSection.style.display = 'block';
+                }, 1500);
+            } else {
+                // 错误提示
+                alert('密码不正确，请重试！');
+                passwordInput.value = '';
+            }
+        });
+
+        // 点击欢迎图片跳转到专辑页面
+        welcomeImage.addEventListener('click', () => {
+            welcomeSection.style.display = 'none';
+            albumSection.style.display = 'block';
+            // 进入专辑页面后显示播放器
+            playerControls.style.display = 'flex';
+        });
+
+        // 播放/暂停按钮事件
+        playPauseButton.addEventListener('click', () => {
+            if (audioPlayer.paused) {
+                audioPlayer.play();
+                playPauseButton.textContent = '⏸️';
+            } else {
+                audioPlayer.pause();
+                playPauseButton.textContent = '▶️';
+            }
+        });
+
+        // 音频播放结束时继续播放
+        audioPlayer.addEventListener('ended', () => {
+            audioPlayer.currentTime = 0;
+            audioPlayer.play();
+        });
+
+        // 页面加载完成后初始化
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>
