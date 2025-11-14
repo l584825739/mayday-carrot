@@ -275,14 +275,55 @@
             60% { transform: translateY(-5px); }
         }
 
+        /* 平板响应式设计 */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .album-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 25px;
+            }
+            
+            .album-cover {
+                height: 300px;
+            }
+        }
+
+        /* 大屏响应式设计 */
+        @media (min-width: 1025px) and (max-width: 1440px) {
+            .album-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 30px;
+            }
+            
+            .album-cover {
+                height: 320px;
+            }
+        }
+
+        /* 超大屏响应式设计 */
+        @media (min-width: 1441px) {
+            .album-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 35px;
+            }
+            
+            .album-cover {
+                height: 350px;
+            }
+        }
+
         /* 移动端响应式设计 */
         @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
             h1 {
                 font-size: 1.8rem;
             }
 
             .password-section {
                 padding: 20px;
+                max-width: 100%;
             }
 
             .welcome-text {
@@ -324,7 +365,7 @@
             }
 
             .album-cover {
-                height: 250px; /* 适当增加高度 */
+                height: 250px;
                 aspect-ratio: 1;
             }
 
@@ -348,11 +389,6 @@
             .player-controls {
                 padding: 15px 20px;
                 flex-wrap: nowrap;
-                position: fixed;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                z-index: 1000;
             }
 
             .current-album {
@@ -775,6 +811,11 @@
             
             // 预加载第一批音频
             preloadBatch(0);
+            
+            // 进入专辑页面后自动播放第一首歌
+            setTimeout(() => {
+                playAlbum(albums[0]);
+            }, 500);
         });
         
         // 在页面加载完成后初始化音频上下文
