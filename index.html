@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>欢迎wmsl！！！</title>
+    <title>欢迎wmls！！！</title>
     <style>
         * {
             margin: 0;
@@ -428,17 +428,23 @@
     <script>
         // 专辑数据 - 按时间顺序排列
         const albums = [
-            { name: "第一张创作专辑", date: "1999-07-07", song: "疯狂世界", image: "images/第一张创作专辑 1999-07-07.png", audio: "MP3/1 疯狂世界.mp3" },
-            { name: "爱情万岁", date: "2000-07-07", song: "温柔", image: "images/爱情万岁 2000-07-07.png", audio: "MP3/2 温柔.mp3" },
-            { name: "人生海海", date: "2001-07-06", song: "人生海海", image: "images/人生海海 2001-07-06.png", audio: "MP3/3 人生海海.mp3" },
-            { name: "时光机", date: "2003-11-11", song: "时光机", image: "images/时光机 2003-11-11.png", audio: "MP3/4 时光机.mp3" },
-            { name: "神的孩子都在跳舞", date: "2004-11-05", song: "倔强", image: "images/神的孩子都在跳舞 2004-11-05.png", audio: "MP3/5 倔强.mp3" },
-            { name: "为爱而生", date: "2006-12-29", song: "香水", image: "images/为爱而生 2006-12-29.png", audio: "MP3/6 香水.mp3" },
-            { name: "后青春的诗", date: "2008-10-23", song: "突然好想你", image: "images/后青春的诗 2008-10-23.png", audio: "MP3/7 突然好想你.mp3" },
-            { name: "第二人生", date: "2011-12-16", song: "星空", image: "images/第二人生 2011-12-16.png", audio: "MP3/8 星空.mp3" },
-            { name: "自选作品集", date: "2013-12-30", song: "步步", image: "images/自选作品集 2013-12-30.png", audio: "MP3/8.1 步步.mp3" },
-            { name: "自传", date: "2016-07-21", song: "顽固", image: "images/自传 2016-07-21.png", audio: "MP3/9 顽固.mp3" }
+            { name: "第一张创作专辑", date: "1999-07-07", song: "疯狂世界", image: "images/第一张创作专辑 1999-07-07.png", audio: "MP3/1 疯狂世界.mp3", audioType: "audio/mpeg" },
+            { name: "爱情万岁", date: "2000-07-07", song: "温柔", image: "images/爱情万岁 2000-07-07.png", audio: "MP3/2 温柔.mp3", audioType: "audio/mpeg" },
+            { name: "人生海海", date: "2001-07-06", song: "人生海海", image: "images/人生海海 2001-07-06.png", audio: "MP3/3 人生海海.mp3", audioType: "audio/mpeg" },
+            { name: "时光机", date: "2003-11-11", song: "时光机", image: "images/时光机 2003-11-11.png", audio: "MP3/4 时光机.mp3", audioType: "audio/mpeg" },
+            { name: "神的孩子都在跳舞", date: "2004-11-05", song: "倔强", image: "images/神的孩子都在跳舞 2004-11-05.png", audio: "MP3/5 倔强.mp3", audioType: "audio/mpeg" },
+            { name: "为爱而生", date: "2006-12-29", song: "香水", image: "images/为爱而生 2006-12-29.png", audio: "MP3/6 香水.mp3", audioType: "audio/mpeg" },
+            { name: "后青春的诗", date: "2008-10-23", song: "突然好想你", image: "images/后青春的诗 2008-10-23.png", audio: "MP3/7 突然好想你.mp3", audioType: "audio/mpeg" },
+            { name: "第二人生", date: "2011-12-16", song: "星空", image: "images/第二人生 2011-12-16.png", audio: "MP3/8 星空.mp3", audioType: "audio/mpeg" },
+            { name: "自选作品集", date: "2013-12-30", song: "步步", image: "images/自选作品集 2013-12-30.png", audio: "MP3/8.1 步步.mp3", audioType: "audio/mpeg" },
+            { name: "自传", date: "2016-07-21", song: "顽固", image: "images/自传 2016-07-21.png", audio: "MP3/9 顽固.mp3", audioType: "audio/mpeg" }
         ];
+        
+        // 音频缓存对象和预加载控制
+        const audioCache = {};
+        let isPreloading = false;
+        let currentPreloadIndex = 0;
+        const PRELOAD_BATCH_SIZE = 2; // 每次预加载的音频数量
 
         // 元素获取
         const passwordSection = document.getElementById('passwordSection');
@@ -536,21 +542,205 @@
             }
         }
 
+        // 音频播放控制
+        let currentAlbumIndex = -1;
+        let currentAudioBuffer = null;
+        let audioContext = null;
+        let audioSourceNode = null;
+        let isPlaying = false;
+        
+        // 添加加载指示器
+        const loadingIndicator = document.createElement('div');
+        loadingIndicator.className = 'loading-indicator';
+        loadingIndicator.style.cssText = `
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            z-index: 1001;
+            display: none;
+            font-size: 14px;
+        `;
+        document.body.appendChild(loadingIndicator);
+        
+        // 初始化音频上下文
+        function initAudioContext() {
+            if (!audioContext) {
+                try {
+                    window.AudioContext = window.AudioContext || window.webkitAudioContext;
+                    audioContext = new AudioContext();
+                } catch (e) {
+                    console.warn('Web Audio API不受支持，将使用HTML5 Audio', e);
+                }
+            }
+        }
+        
+        // 使用Fetch API预加载音频文件
+        function preloadAudio(index) {
+            const album = albums[index];
+            if (audioCache[album.audio]) {
+                return Promise.resolve(audioCache[album.audio]);
+            }
+            
+            loadingIndicator.textContent = `正在加载《${album.song}》...`;
+            loadingIndicator.style.display = 'block';
+            
+            return fetch(album.audio)
+                .then(response => {
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    return response.arrayBuffer();
+                })
+                .then(buffer => {
+                    if (audioContext) {
+                        return audioContext.decodeAudioData(buffer);
+                    }
+                    // 如果不支持Web Audio API，保存原始buffer
+                    return buffer;
+                })
+                .then(decodedBuffer => {
+                    audioCache[album.audio] = decodedBuffer;
+                    loadingIndicator.style.display = 'none';
+                    return decodedBuffer;
+                })
+                .catch(error => {
+                    console.error('音频加载失败:', error);
+                    loadingIndicator.style.display = 'none';
+                    // 回退到HTML5 Audio
+                    return null;
+                });
+        }
+        
+        // 批量预加载功能
+        function preloadBatch(startIndex) {
+            if (isPreloading) return;
+            
+            isPreloading = true;
+            const promises = [];
+            
+            for (let i = 0; i < PRELOAD_BATCH_SIZE; i++) {
+                const index = (startIndex + i) % albums.length;
+                if (!audioCache[albums[index].audio]) {
+                    promises.push(
+                        // 使用setTimeout分散加载请求，避免阻塞
+                        new Promise(resolve => {
+                            setTimeout(() => {
+                                preloadAudio(index).then(resolve);
+                            }, i * 500);
+                        })
+                    );
+                }
+            }
+            
+            Promise.all(promises).then(() => {
+                isPreloading = false;
+                currentPreloadIndex = (startIndex + PRELOAD_BATCH_SIZE) % albums.length;
+            });
+        }
+        
+        // 使用Web Audio API播放音频缓冲区
+        function playAudioBuffer(buffer, album) {
+            if (!audioContext) {
+                // 回退到HTML5 Audio
+                fallbackToHtmlAudio(album);
+                return;
+            }
+            
+            // 停止当前播放
+            if (audioSourceNode) {
+                audioSourceNode.stop();
+                audioSourceNode.disconnect();
+            }
+            
+            // 创建新的音频源
+            audioSourceNode = audioContext.createBufferSource();
+            audioSourceNode.buffer = buffer;
+            audioSourceNode.connect(audioContext.destination);
+            
+            // 播放结束事件
+            audioSourceNode.onended = handleAudioEnded;
+            
+            // 开始播放
+            audioSourceNode.start(0);
+            isPlaying = true;
+        }
+        
+        // 回退到HTML5 Audio
+        function fallbackToHtmlAudio(album) {
+            if (audioPlayer.src) {
+                audioPlayer.pause();
+            }
+            
+            audioPlayer.src = album.audio;
+            audioPlayer.load();
+            
+            // 使用canplaythrough事件，确保有足够的数据开始播放
+            const playHandler = () => {
+                audioPlayer.play().catch(error => {
+                    console.error('播放失败:', error);
+                });
+                audioPlayer.removeEventListener('canplaythrough', playHandler);
+                loadingIndicator.style.display = 'none';
+            };
+            
+            audioPlayer.addEventListener('canplaythrough', playHandler);
+            isPlaying = true;
+        }
+        
+        // 处理音频播放结束
+        function handleAudioEnded() {
+            isPlaying = false;
+            playPauseButton.textContent = '▶️';
+        }
+        
         // 播放指定专辑的歌曲
         function playAlbum(album) {
-            audioSource.src = album.audio;
-            audioPlayer.load();
-            audioPlayer.play();
+            initAudioContext();
             
+            // 停止当前播放
+            if (audioSourceNode) {
+                audioSourceNode.stop();
+                audioSourceNode.disconnect();
+                audioSourceNode = null;
+            } else if (audioPlayer.src) {
+                audioPlayer.pause();
+            }
+            
+            // 查找当前专辑索引
+            currentAlbumIndex = albums.findIndex(a => a.name === album.name);
+            
+            // 更新播放控制信息
             currentAlbumName.textContent = album.name;
             currentSongName.textContent = album.song;
             currentAlbumCover.src = album.image;
+            
+            // 检查缓存
+            if (audioCache[album.audio]) {
+                playAudioBuffer(audioCache[album.audio], album);
+                playPauseButton.textContent = '⏸️';
+            } else {
+                // 加载并播放
+                preloadAudio(currentAlbumIndex).then(buffer => {
+                    if (buffer) {
+                        playAudioBuffer(buffer, album);
+                        playPauseButton.textContent = '⏸️';
+                    } else {
+                        fallbackToHtmlAudio(album);
+                        playPauseButton.textContent = '⏸️';
+                    }
+                    
+                    // 预加载下一批音频
+                    preloadBatch((currentAlbumIndex + 1) % albums.length);
+                });
+            }
             
             // 只有在专辑页面才显示播放器
             if (albumSection.style.display === 'block') {
                 playerControls.style.display = 'flex';
             }
-            playPauseButton.textContent = '⏸️';
         }
 
         // 解锁按钮事件
@@ -582,16 +772,48 @@
             albumSection.style.display = 'block';
             // 进入专辑页面后显示播放器
             playerControls.style.display = 'flex';
+            
+            // 预加载第一批音频
+            preloadBatch(0);
+        });
+        
+        // 在页面加载完成后初始化音频上下文
+        window.addEventListener('DOMContentLoaded', () => {
+            // 尝试在用户交互时初始化音频上下文（浏览器安全限制）
+            document.addEventListener('click', initAudioContext, { once: true });
+            document.addEventListener('touchstart', initAudioContext, { once: true });
         });
 
         // 播放/暂停按钮事件
         playPauseButton.addEventListener('click', () => {
-            if (audioPlayer.paused) {
-                audioPlayer.play();
-                playPauseButton.textContent = '⏸️';
+            if (!audioContext || !audioSourceNode) {
+                // 使用HTML5 Audio
+                if (audioPlayer.paused) {
+                    audioPlayer.play().catch(error => {
+                        console.error('播放失败:', error);
+                    });
+                    playPauseButton.textContent = '⏸️';
+                    isPlaying = true;
+                } else {
+                    audioPlayer.pause();
+                    playPauseButton.textContent = '▶️';
+                    isPlaying = false;
+                }
             } else {
-                audioPlayer.pause();
-                playPauseButton.textContent = '▶️';
+                // 使用Web Audio API
+                if (audioContext.state === 'suspended') {
+                    audioContext.resume();
+                    playPauseButton.textContent = '⏸️';
+                    isPlaying = true;
+                } else if (isPlaying) {
+                    audioContext.suspend();
+                    playPauseButton.textContent = '▶️';
+                    isPlaying = false;
+                } else {
+                    audioContext.resume();
+                    playPauseButton.textContent = '⏸️';
+                    isPlaying = true;
+                }
             }
         });
 
@@ -605,5 +827,4 @@
         window.addEventListener('load', init);
     </script>
 </body>
-
 </html>
